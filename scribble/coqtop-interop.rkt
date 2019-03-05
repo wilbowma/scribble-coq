@@ -2,6 +2,7 @@
 ;; This module is copied and modified, with permission, from
 ;; https://github.com/sorawee/my-website/blob/master/coq-tactics/pollen.rkt
 ;; Copyright 2019, Sorawee Porncharoenwase and William J. Bowman.
+;; Licensed BSD 2-clause; see LICENSE
 (require
  racket/list
  racket/function
