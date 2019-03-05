@@ -3,14 +3,12 @@
 ;; https://github.com/sorawee/my-website/blob/master/coq-tactics/pollen.rkt
 ;; Copyright 2019, Sorawee Porncharoenwase and William J. Bowman.
 (require
- racket/sequence
  racket/list
  racket/function
  racket/match
  racket/system
  racket/format
  racket/string
- racket/set
  "string-utils.rkt"
  threading)
 

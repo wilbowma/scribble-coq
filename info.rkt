@@ -1,6 +1,6 @@
 #lang info
 (define collection 'multi)
-(define deps '("rackunit-lib"
+(define deps '("threading-lib"
                "scribble-lib"
                "scribble-minted"
                "base"))

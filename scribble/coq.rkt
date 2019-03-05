@@ -4,13 +4,7 @@
  scribble/minted
  scribble/base
  scribble/core
- racket/sandbox
- racket/match
- racket/system
- racket/format
- racket/string
  racket/list
- racket/port
  "coqtop-interop.rkt")
 
 (provide (all-defined-out))
