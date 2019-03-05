@@ -1,6 +1,7 @@
 #lang racket/base
 ;; This module is copied and modified, with permission, from
 ;; https://github.com/sorawee/my-website/blob/master/coq-tactics/pollen.rkt
+;; Copyright 2019, Sorawee Porncharoenwase and William J. Bowman.
 (require
  racket/sequence
  racket/list
@@ -10,9 +11,12 @@
  racket/format
  racket/string
  racket/set
+ "string-utils.rkt"
  threading)
 
 (provide (all-defined-out))
+
+(define current-coqtop-path (make-parameter (find-executable-path "coqtop")))
 
 (define (analyze-coqtop-output output)
   (~> output
@@ -57,19 +61,32 @@
 
 (define (analyze/combine pair) (string-append (car pair) "\n\n" (cdr pair)))
 
-(define (call-coq/core src)
+(define ((init-coqtop coqtop-proc coqtop-out coqtop-in coqtop-err))
   (match-define (list in out _ err proc)
-    (process (~a (find-executable-path "coqtop") " -emacs 2>&1")))
-  (display src out)
-  (close-output-port out)
-  (proc 'wait)
-  (define output '())
-  (let loop ()
-    (match (read-line in)
-      [(? string? v) (set! output (cons v output))
-                     (loop)]
-      [_ (void)]))
-  (close-input-port in)
-  (close-input-port err)
-  (proc 'kill)
-  (rest (reverse output)))
+    (process (~a (current-coqtop-path) " -emacs 2>&1")))
+  (set-box! coqtop-proc proc)
+  (set-box! coqtop-out out)
+  (set-box! coqtop-in in)
+  (set-box! coqtop-err err)
+  (read-coqtop-until-prompt in))
+
+(define ((eval-coqtop coqtop-proc coqtop-out coqtop-in coqtop-err) str)
+  (displayln str (unbox coqtop-out))
+  (flush-output (unbox coqtop-out))
+  (string-append* (analyze-coqtop-output (read-coqtop-until-prompt (unbox coqtop-in)))))
+
+(define ((exit-coqtop coqtop-proc coqtop-out coqtop-in coqtop-err))
+  (close-output-port (unbox coqtop-out))
+  (close-input-port (unbox coqtop-in))
+  (close-input-port (unbox coqtop-err))
+  ((unbox coqtop-proc) 'kill))
+
+(define (read-coqtop-until-prompt in)
+  (let loop ([output '()])
+    ;; peak: if it's a prompt, coqtop is done
+    (if (equal? (peek-string 8 0 in) "<prompt>")
+        (reverse (cons (read-string-avail in) output))
+        (match (read-line in)
+          [(? string? v)
+           (loop (cons v output))]
+          [else (error "I wasn't expected a not-string, but found" else)]))))
