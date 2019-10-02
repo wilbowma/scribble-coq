@@ -20,6 +20,7 @@
   ; NB: Bleh, I've reinvented objects, badly!
   (define-values (coqtop-proc coqtop-out coqtop-in coqtop-err)
     (values (box #f) (box #f) (box #f) (box #f)))
+  ((init-coqtop coqtop-proc coqtop-out coqtop-in coqtop-err))
   (list
    (init-coqtop coqtop-proc coqtop-out coqtop-in coqtop-err)
    (exit-coqtop coqtop-proc coqtop-out coqtop-in coqtop-err)
@@ -28,7 +29,6 @@
 (define interaction-prompt (make-element 'tt (list "> " )))
 
 (define (coq-example #:eval ev . contents)
-  ((first ev))
   (let ([example (apply string-append contents)])
     (list
      (nested
