@@ -5,6 +5,7 @@
  scribble/base
  scribble/core
  racket/list
+ racket/string
  "coqtop-interop.rkt")
 
 (provide (all-defined-out))
@@ -29,15 +30,18 @@
 (define interaction-prompt (make-element 'tt (list "> " )))
 
 (define (coq-example #:eval ev . contents)
-  (let ([example (apply string-append contents)])
+  ;; I will not write a Coq parser
+  (let ([examples (string-split (apply string-append contents) ".")])
     (list
-     (nested
+     (para (list (if (> (length examples) 1) "Examples:" "Example:")))
+     (apply nested
       #:style 'code-inset
-      (para (list "Example(s):"))
-      (nested
-       interaction-prompt
-       (coqinline example))
-      (coqinline ((third ev) example))))))
+      (for/list ([eg examples])
+        (list
+         (nested
+          interaction-prompt
+          (coqinline (string-append eg ".")))
+         (coqinline ((third ev) (string-append eg ".")))))))))
 
 (define (close-coq-eval ev)
   ((second ev)))
