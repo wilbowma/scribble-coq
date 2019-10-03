@@ -31,7 +31,7 @@
 
 (define (coq-example #:eval ev . contents)
   ;; I will not write a Coq parser
-  (let ([examples (string-split (apply string-append contents) ".")])
+  (let ([examples (filter (λ (x) (not (equal? "" x))) (regexp-split #rx"(?m:\\.$)" (apply string-append contents)))])
     (list
      (para (list (if (> (length examples) 1) "Examples:" "Example:")))
      (apply nested

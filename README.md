@@ -21,3 +21,8 @@ See pretty code!
 Requires `scribble-minted`.
 
 You must have `pygmentize` and `coqtop` installed and in your `PATH`.
+
+## Caveats
+When using `coq-example` uses a very primitive not-parser to figure out how many
+commands to send to coqtop.
+Every vernacular command must be "." followed by either a newline the end of the string.
